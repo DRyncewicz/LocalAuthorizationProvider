@@ -1,4 +1,7 @@
-﻿using IdentityModel;
+﻿using Duende.IdentityServer.EntityFramework.DbContexts;
+using Duende.IdentityServer.EntityFramework.Mappers;
+using Duende.IdentityServer.Models;
+using IdentityModel;
 using LocalAuthorizationProvider.Data;
 using LocalAuthorizationProvider.Models;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +19,68 @@ namespace LocalAuthorizationProvider
             {
                 var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
                 context.Database.Migrate();
+
+                var configurationDbContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+                configurationDbContext.Database.Migrate();
+
+                if (!configurationDbContext.Clients.Any())
+                {
+                    Log.Debug("Clients being populated");
+                    foreach (var client in Config.Clients.ToList())
+                    {
+                        configurationDbContext.Clients.Add(client.ToEntity());
+                    }
+                    configurationDbContext.SaveChanges();
+                }
+                else
+                {
+                    Log.Debug("Clients already populated");
+                }
+
+                if (!configurationDbContext.IdentityResources.Any())
+                {
+                    Log.Debug("IdentityResources being populated");
+                    foreach (var resource in Config.IdentityResources.ToList())
+                    {
+                        configurationDbContext.IdentityResources.Add(resource.ToEntity());
+                    }
+                    configurationDbContext.SaveChanges();
+                }
+                else
+                {
+                    Log.Debug("IdentityResources already populated");
+                }
+
+                if (!configurationDbContext.ApiScopes.Any())
+                {
+                    Log.Debug("ApiScopes being populated");
+                    foreach (var resource in Config.ApiScopes.ToList())
+                    {
+                        configurationDbContext.ApiScopes.Add(resource.ToEntity());
+                    }
+                    configurationDbContext.SaveChanges();
+                }
+                else
+                {
+                    Log.Debug("ApiScopes already populated");
+                }
+
+                if (!configurationDbContext.IdentityProviders.Any())
+                {
+                    Log.Debug("OIDC IdentityProviders being populated");
+                    configurationDbContext.IdentityProviders.Add(new OidcProvider
+                    {
+                        Scheme = "demoidsrv",
+                        DisplayName = "IdentityServer",
+                        Authority = "https://demo.duendesoftware.com",
+                        ClientId = "login",
+                    }.ToEntity());
+                    configurationDbContext.SaveChanges();
+                }
+                else
+                {
+                    Log.Debug("OIDC IdentityProviders already populated");
+                }
 
                 var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 var alice = userMgr.FindByNameAsync("alice").Result;
