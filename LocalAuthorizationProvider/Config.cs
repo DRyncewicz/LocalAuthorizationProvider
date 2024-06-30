@@ -27,43 +27,42 @@ public static class Config
     public static IEnumerable<Client> Clients =>
         new Client[]
         {
-        new Client
-        {
-            ClientId = "client",
-            ClientName = "Client for Postman user",
-            AllowedGrantTypes = GrantTypes.ResourceOwnerPasswordAndClientCredentials,
-            ClientSecrets = {new  Secret("secret".Sha256())},
-            AllowedScopes = {"api1",  "user"},
-            AlwaysSendClientClaims = true,
-            AlwaysIncludeUserClaimsInIdToken = true,
-            AllowAccessTokensViaBrowser = true
-        },
-        new Client
-        {
-            ClientId = "swagger",
-            ClientName ="Client for Swagger user",
-            AllowedGrantTypes = GrantTypes.CodeAndClientCredentials,
-            ClientSecrets = {new Secret("secret".Sha256())},
-            AllowedScopes = {"api1", "user", "openid"},
-            AlwaysSendClientClaims = true,
-            AlwaysIncludeUserClaimsInIdToken = true,
-            AllowAccessTokensViaBrowser = true,
-            RedirectUris = { "https://localhost:7008/swagger/oauth2-redirect.html" },
-            AllowedCorsOrigins = { "https://localhost:7008" }
-        },
-        new Client
-        {
-        ClientId = "botickr-client",
-        ClientName = "Botickr React Client",
-        AllowedGrantTypes = GrantTypes.Code,
-        RequireClientSecret = false,
-        RedirectUris = { "https://localhost:3000/authentication/login-callback" },
-        PostLogoutRedirectUris = { "https://localhost:3000/authentication/logout-callback" },
-        AllowedCorsOrigins = { "https://localhost:3000" },
-        AllowedScopes = {"user", "openid", "profile", "api1"},
-        RequirePkce = true,
-        AllowAccessTokensViaBrowser = true
-        }
-
+            new Client
+            {
+                ClientId = "client",
+                ClientName = "Client for Postman user",
+                AllowedGrantTypes = GrantTypes.ResourceOwnerPasswordAndClientCredentials,
+                ClientSecrets = {new  Secret("secret".Sha256())},
+                AllowedScopes = {"api1",  "user"},
+                AlwaysSendClientClaims = true,
+                AlwaysIncludeUserClaimsInIdToken = true,
+                AllowAccessTokensViaBrowser = true
+            },
+            new Client
+            {
+                ClientId = "swagger",
+                ClientName ="Client for Swagger user",
+                AllowedGrantTypes = GrantTypes.CodeAndClientCredentials,
+                ClientSecrets = {new Secret("secret".Sha256())},
+                AllowedScopes = {"api1", "user", "openid"},
+                AlwaysSendClientClaims = true,
+                AlwaysIncludeUserClaimsInIdToken = true,
+                AllowAccessTokensViaBrowser = true,
+                RedirectUris = { "https://localhost:7008/swagger/oauth2-redirect.html" },
+                AllowedCorsOrigins = { "https://localhost:7008" }
+            },
+            new Client
+            {
+                ClientId = "botickr-client",
+                ClientName = "Botickr React Client",
+                ClientSecrets = {new Secret("secret".Sha256())},
+                AllowedGrantTypes = GrantTypes.Code,
+                RedirectUris = { "http://localhost:3000/api/auth/callback/duende-identity-server6" },
+                PostLogoutRedirectUris = { "http://localhost:3000" },
+                AllowedCorsOrigins = { "http://localhost:3000" },
+                AllowedScopes = {"openid", "profile", "api1"},
+                RequirePkce = true,
+                AlwaysIncludeUserClaimsInIdToken = true
+            }
         };
 }

@@ -1,5 +1,6 @@
 using LocalAuthorizationProvider.Data;
 using LocalAuthorizationProvider.Models;
+using LocalAuthorizationProvider.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -37,6 +38,7 @@ namespace LocalAuthorizationProvider
                 .AddInMemoryClients(Config.Clients)
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddJwtBearerClientAuthentication()
+                .AddProfileService<CustomProfileService>()
                 .AddConfigurationStore(options =>
                 {
                     options.DefaultSchema = "cfg";
