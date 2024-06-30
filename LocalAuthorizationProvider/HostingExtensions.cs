@@ -1,6 +1,6 @@
-using Duende.IdentityServer;
 using LocalAuthorizationProvider.Data;
 using LocalAuthorizationProvider.Models;
+using LocalAuthorizationProvider.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -12,9 +12,11 @@ namespace LocalAuthorizationProvider
         public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
         {
             builder.Services.AddRazorPages();
+            var configuration = builder.Configuration;
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(connectionString));
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -34,19 +36,17 @@ namespace LocalAuthorizationProvider
                 .AddInMemoryIdentityResources(Config.IdentityResources)
                 .AddInMemoryApiScopes(Config.ApiScopes)
                 .AddInMemoryClients(Config.Clients)
-                .AddAspNetIdentity<ApplicationUser>();
-
-            builder.Services.AddAuthentication()
-                .AddGoogle(options =>
+                .AddAspNetIdentity<ApplicationUser>()
+                .AddJwtBearerClientAuthentication()
+                .AddProfileService<CustomProfileService>()
+                .AddConfigurationStore(options =>
                 {
-                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-
-                    // register your IdentityServer with Google at https://console.developers.google.com
-                    // enable the Google+ API
-                    // set the redirect URI to https://localhost:5001/signin-google
-                    options.ClientId = "copy client ID from Google here";
-                    options.ClientSecret = "copy client secret from Google here";
+                    options.DefaultSchema = "cfg";
+                    options.ConfigureDbContext = b =>
+                        b.UseSqlServer(connectionString, dbOpts => dbOpts.MigrationsAssembly(typeof(Program).Assembly.FullName));
                 });
+
+            builder.Services.AddAuthentication();
 
             return builder.Build();
         }
