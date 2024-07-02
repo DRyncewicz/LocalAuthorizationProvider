@@ -1,5 +1,6 @@
 ﻿using Duende.IdentityServer.Models;
 using IdentityModel;
+using static System.Net.WebRequestMethods;
 
 namespace LocalAuthorizationProvider;
 
@@ -62,7 +63,10 @@ public static class Config
                 AllowedCorsOrigins = { "http://localhost:3000" },
                 AllowedScopes = {"openid", "profile", "api1"},
                 RequirePkce = true,
-                AlwaysIncludeUserClaimsInIdToken = true
+                AlwaysIncludeUserClaimsInIdToken = true,
+                AllowOfflineAccess = false,
+                FrontChannelLogoutUri = "http://localhost:3000/api/auth/signout",
+                BackChannelLogoutUri = "http://localhost:3000/api/auth/backchannel-logout"
             }
         };
 }

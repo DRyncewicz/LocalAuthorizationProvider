@@ -37,6 +37,7 @@ namespace LocalAuthorizationProvider
                 .AddInMemoryApiScopes(Config.ApiScopes)
                 .AddInMemoryClients(Config.Clients)
                 .AddAspNetIdentity<ApplicationUser>()
+                .AddServerSideSessions()
                 .AddJwtBearerClientAuthentication()
                 .AddProfileService<CustomProfileService>()
                 .AddConfigurationStore(options =>

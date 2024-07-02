@@ -30,6 +30,8 @@ public class CustomProfileService(UserManager<ApplicationUser> _userManager) : I
         {
             claims.Add(new Claim(JwtClaimTypes.Email, user.Email));
         }
+        var userClaims = await _userManager.GetClaimsAsync(user);
+        claims.AddRange(userClaims);
 
         context.IssuedClaims.AddRange(claims);
     }

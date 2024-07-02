@@ -1,4 +1,5 @@
 using Duende.IdentityServer.Events;
+using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
@@ -21,7 +22,8 @@ namespace LocalAuthorizationProvider.Pages.Login
         private readonly IEventService _events;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IIdentityProviderStore _identityProviderStore;
-
+        private readonly IServerSideSessionStore _sessionStore;
+        private readonly ISessionManagementService _sessionManagementService;
         public ViewModel View { get; set; }
 
         [BindProperty]
@@ -33,7 +35,9 @@ namespace LocalAuthorizationProvider.Pages.Login
             IIdentityProviderStore identityProviderStore,
             IEventService events,
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            ISessionManagementService sessionManagementService,
+            IServerSideSessionStore sessionStore)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -41,6 +45,8 @@ namespace LocalAuthorizationProvider.Pages.Login
             _schemeProvider = schemeProvider;
             _identityProviderStore = identityProviderStore;
             _events = events;
+            _sessionManagementService = sessionManagementService;
+            _sessionStore = sessionStore;
         }
 
         public async Task<IActionResult> OnGet(string returnUrl)
@@ -90,11 +96,29 @@ namespace LocalAuthorizationProvider.Pages.Login
 
             if (ModelState.IsValid)
             {
+                var user = await _userManager.FindByNameAsync(Input.Username);
+                if (user != null)
+                {
+                    var sessions = await _sessionManagementService.QuerySessionsAsync(new SessionQuery()
+                    {
+                        SubjectId = user.Id
+                    }, default);
+                    if (sessions.Results.Any())
+                    {
+                        await _sessionManagementService.RemoveSessionsAsync(new RemoveSessionsContext()
+                        {
+                            SubjectId = user.Id
+                        }, default);
+                    }
+                }
+
                 var result = await _signInManager.PasswordSignInAsync(Input.Username, Input.Password, Input.RememberLogin, lockoutOnFailure: true);
+
                 if (result.Succeeded)
                 {
-                    var user = await _userManager.FindByNameAsync(Input.Username);
                     await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
+
+
 
                     if (context != null)
                     {
