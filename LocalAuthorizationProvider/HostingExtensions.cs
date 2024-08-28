@@ -60,11 +60,18 @@ namespace LocalAuthorizationProvider
                     options.ConfigureDbContext = b =>
                         b.UseSqlServer(connectionString, dbOpts => dbOpts.MigrationsAssembly(typeof(Program).Assembly.FullName));
                 });
-            //builder.WebHost.UseKestrel(options =>
-            //{
-            //    options.ListenAnyIP(8080); // HTTP
-            //});
-            builder.Services.AddAuthentication();
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "cookies";
+                options.DefaultChallengeScheme = "oidc";
+            })
+            .AddCookie("cookies", options =>
+            {
+                options.Cookie.Name = "appcookie";
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            });
 
             return builder.Build();
         }
