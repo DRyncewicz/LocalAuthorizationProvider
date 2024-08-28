@@ -21,6 +21,17 @@ namespace LocalAuthorizationProvider
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder =>
+                    {
+                        builder
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials();
+                    });
+            });
 
             builder.Services
                 .AddIdentityServer(options =>
@@ -46,7 +57,10 @@ namespace LocalAuthorizationProvider
                     options.ConfigureDbContext = b =>
                         b.UseSqlServer(connectionString, dbOpts => dbOpts.MigrationsAssembly(typeof(Program).Assembly.FullName));
                 });
-
+            builder.WebHost.UseKestrel(options =>
+            {
+                options.ListenAnyIP(8080); // HTTP
+            });
             builder.Services.AddAuthentication();
 
             return builder.Build();
@@ -60,6 +74,7 @@ namespace LocalAuthorizationProvider
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseCors("AllowSpecificOrigin");
 
             app.UseStaticFiles();
             app.UseRouting();

@@ -1,4 +1,5 @@
-﻿using Duende.IdentityServer.Models;
+﻿using Duende.IdentityServer.Extensions;
+using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using IdentityModel;
 using LocalAuthorizationProvider.Models;
@@ -7,9 +8,10 @@ using System.Security.Claims;
 
 namespace LocalAuthorizationProvider.Services;
 
-public class CustomProfileService(UserManager<ApplicationUser> _userManager) : IProfileService
+public class CustomProfileService(UserManager<ApplicationUser> _userManager, ISessionManagementService sessionManagementService) : IProfileService
 {
     private readonly UserManager<ApplicationUser> _userManager = _userManager;
+    private readonly ISessionManagementService _sessionManagementService = sessionManagementService;
 
     public async Task GetProfileDataAsync(ProfileDataRequestContext context)
     {
@@ -38,7 +40,17 @@ public class CustomProfileService(UserManager<ApplicationUser> _userManager) : I
 
     public async Task IsActiveAsync(IsActiveContext context)
     {
-        var user = await _userManager.GetUserAsync(context.Subject);
-        context.IsActive = user != null;
+        var sessions = await _sessionManagementService.QuerySessionsAsync(new Duende.IdentityServer.Stores.SessionQuery()
+        {
+            SubjectId = context.Subject.Identity.GetSubjectId()
+        });
+        if (sessions.Results.Any())
+        {
+            context.IsActive = true;
+        }
+        else
+        {
+            context.IsActive = false;
+        }
     }
 }
