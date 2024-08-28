@@ -1,5 +1,10 @@
 # Zmiana bazowego obrazu na ASP.NET 8.0
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+
+# Utworzenie u¿ytkownika o nazwie 'app'
+RUN useradd -ms /bin/sh app
+
+# Prze³¹cz na u¿ytkownika 'app'
 USER app
 WORKDIR /app
 EXPOSE 8080
@@ -29,5 +34,14 @@ RUN dotnet publish "./LocalAuthorizationProvider.csproj" -c $BUILD_CONFIGURATION
 # Faza finalna, ostateczny obraz
 FROM base AS final
 WORKDIR /app
+
+# Ustaw uprawnienia dla katalogu /app
+RUN chown -R app:app /app
+
+# Skopiuj pliki z fazy publikacji do ostatecznego obrazu
 COPY --from=publish /app/publish .
+
+# Prze³¹cz na u¿ytkownika 'app' przed uruchomieniem aplikacji
+USER app
+
 ENTRYPOINT ["dotnet", "LocalAuthorizationProvider.dll"]
