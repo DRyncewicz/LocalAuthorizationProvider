@@ -20,7 +20,7 @@ namespace LocalAuthorizationProvider
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
             });
             builder.Services.AddAntiforgery(options =>
             {
