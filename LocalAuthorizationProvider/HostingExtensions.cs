@@ -22,10 +22,7 @@ namespace LocalAuthorizationProvider
                 options.Cookie.SameSite = SameSiteMode.None;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
             });
-            builder.Services.AddAntiforgery(options =>
-            {
-                options.Cookie.HttpOnly = true;
-            });
+
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
