@@ -32,6 +32,7 @@ namespace LocalAuthorizationProvider
                     builder =>
                     {
                         builder
+                            .AllowAnyOrigin()
                             .AllowAnyHeader()
                             .AllowAnyMethod()
                             .AllowCredentials();
