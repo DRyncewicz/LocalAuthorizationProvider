@@ -35,7 +35,6 @@ namespace LocalAuthorizationProvider
                             .AllowAnyOrigin()
                             .AllowAnyHeader()
                             .AllowAnyMethod()
-                            .AllowCredentials();
                     });
             });
 
