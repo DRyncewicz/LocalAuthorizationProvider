@@ -1,10 +1,7 @@
 # Zmiana bazowego obrazu na ASP.NET 8.0
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 
-# Utworzenie u¿ytkownika o nazwie 'app'
-RUN useradd -ms /bin/sh app
-
-# Prze³¹cz na u¿ytkownika 'app'
+# Prze³¹cz na u¿ytkownika 'app' (jeœli istnieje, jeœli nie to nic siê nie stanie)
 USER app
 WORKDIR /app
 EXPOSE 8080
