@@ -60,10 +60,10 @@ namespace LocalAuthorizationProvider
                     options.ConfigureDbContext = b =>
                         b.UseSqlServer(connectionString, dbOpts => dbOpts.MigrationsAssembly(typeof(Program).Assembly.FullName));
                 });
-            builder.WebHost.UseKestrel(options =>
-            {
-                options.ListenAnyIP(8080); // HTTP
-            });
+            //builder.WebHost.UseKestrel(options =>
+            //{
+            //    options.ListenAnyIP(8080); // HTTP
+            //});
             builder.Services.AddAuthentication();
 
             return builder.Build();
@@ -71,6 +71,7 @@ namespace LocalAuthorizationProvider
 
         public static WebApplication ConfigurePipeline(this WebApplication app)
         {
+            app.UseHttpsRedirection();
             app.UseSerilogRequestLogging();
 
             if (app.Environment.IsDevelopment())
