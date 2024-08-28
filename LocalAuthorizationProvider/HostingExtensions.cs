@@ -34,7 +34,7 @@ namespace LocalAuthorizationProvider
                         builder
                             .AllowAnyOrigin()
                             .AllowAnyHeader()
-                            .AllowAnyMethod()
+                            .AllowAnyMethod();
                     });
             });
 
