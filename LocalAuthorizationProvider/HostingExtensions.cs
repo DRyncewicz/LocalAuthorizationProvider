@@ -22,6 +22,11 @@ namespace LocalAuthorizationProvider
                 options.Cookie.SameSite = SameSiteMode.None;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
+            builder.Services.AddAntiforgery(options =>
+            {
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            });
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
@@ -61,17 +66,7 @@ namespace LocalAuthorizationProvider
                         b.UseSqlServer(connectionString, dbOpts => dbOpts.MigrationsAssembly(typeof(Program).Assembly.FullName));
                 });
 
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = "cookies";
-                options.DefaultChallengeScheme = "oidc";
-            })
-            .AddCookie("cookies", options =>
-            {
-                options.Cookie.Name = "appcookie";
-                options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            });
+            builder.Services.AddAuthentication();
 
             return builder.Build();
         }
