@@ -13,13 +13,21 @@ namespace LocalAuthorizationProvider
 {
     public class SeedData
     {
-        public static void EnsureSeedData(WebApplication app)
+        public static void Migrate(WebApplication app)
         {
             using (var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
                 context.Database.Migrate();
+                var conContext = scope.ServiceProvider.GetService<ConfigurationDbContext>();
+                conContext.Database.Migrate();
+            }
+        }
 
+        public static void EnsureSeedData(WebApplication app)
+        {
+            using (var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
                 var configurationDbContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
                 configurationDbContext.Database.Migrate();
 
