@@ -1,6 +1,5 @@
 ﻿using Duende.IdentityServer.Models;
 using IdentityModel;
-using static System.Net.WebRequestMethods;
 
 namespace LocalAuthorizationProvider;
 
@@ -49,8 +48,8 @@ public static class Config
                 AlwaysSendClientClaims = true,
                 AlwaysIncludeUserClaimsInIdToken = true,
                 AllowAccessTokensViaBrowser = true,
-                RedirectUris = { "https://localhost:7008/swagger/oauth2-redirect.html" },
-                AllowedCorsOrigins = { "https://localhost:7008" }
+                RedirectUris = { "https://localhost:7194/swagger/oauth2-redirect.html" },
+                AllowedCorsOrigins = { "https://localhost:7194" }
             },
             new Client
             {
